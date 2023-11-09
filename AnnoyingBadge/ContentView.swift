@@ -8,12 +8,28 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var count = UserDefaults.standard.integer(forKey: "count")
+    let defaults = UserDefaults.standard
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        VStack(spacing: 20) {
+            Text(count.formatted())
+                .font(.largeTitle)
+            
+            Button {
+                count += 1
+                defaults.set(count, forKey: "count")
+                UNUserNotificationCenter.current().requestAuthorization(options: .badge) { (granted, error) in
+                    if error == nil {
+                        UNUserNotificationCenter.current().setBadgeCount(count)
+                    }
+                }
+            } label: {
+                Text("Increment badge!")
+                    .padding()
+            }
+            .buttonStyle(.borderedProminent)
+
         }
         .padding()
     }
